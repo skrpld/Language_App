@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.language_app.ui.EmptyScreen
 import com.example.language_app.ui.NoConnectionScreen
+import com.example.language_app.ui.Onboarding
 import com.example.language_app.ui.theme.Language_AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Language_AppTheme(dynamicColor = false) {
-                NoConnectionScreen()
+                Onboarding()
             }
         }
     }
