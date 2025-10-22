@@ -1,4 +1,4 @@
-package com.example.language_app.ui
+package com.example.language_app.ui.utils
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoConnectionScreen(modifier: Modifier = Modifier) {
+fun NoConnectionScreen() {
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("") },
@@ -37,27 +37,27 @@ fun NoConnectionScreen(modifier: Modifier = Modifier) {
         }
     ) { paddingValues ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "😞",
                 style = MaterialTheme.typography.displayLarge,
             )
-            Spacer(modifier = modifier.weight(0.2f))
+            Spacer(modifier = Modifier.weight(0.2f))
             Text(
                 text = "No\ninternet connection",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineMedium,
             )
-            Spacer(modifier = modifier.weight(2f))
+            Spacer(modifier = Modifier.weight(2f))
             Button(
                 onClick = { /*TODO: Check again*/ },
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 colors = ButtonDefaults.buttonColors(

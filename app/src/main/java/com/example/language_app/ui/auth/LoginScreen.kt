@@ -1,4 +1,4 @@
-package com.example.language_app.ui
+package com.example.language_app.ui.auth
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -66,10 +66,11 @@ fun LoginScreen() {
                 }
             )
         }
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(16.dp)
         ) {
             Column(
