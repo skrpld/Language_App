@@ -66,7 +66,8 @@ fun NoConnectionScreen(modifier: Modifier = Modifier) {
                 )
             ) {
                 Text(
-                    text = "Check again"
+                    text = "Check again",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
