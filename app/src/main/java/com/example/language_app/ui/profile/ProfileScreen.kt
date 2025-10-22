@@ -150,7 +150,7 @@ fun ProfileScreen() {
 }
 
 @Composable
-fun TopAppBar(title: () -> Unit) {
+fun TopAppBar(title: @Composable () -> Unit) {
     TODO("Not yet implemented")
 }
 
