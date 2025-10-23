@@ -4,16 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.language_app.ui.EmptyScreen
-import com.example.language_app.ui.NoConnectionScreen
-import com.example.language_app.ui.Onboarding
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.language_app.data.AppDatabase
+import com.example.language_app.domain.AuthManager
 import com.example.language_app.ui.theme.Language_AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,8 +17,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val context = LocalContext.current
+            val appDatabase = remember { AppDatabase.getDatabase(context) }
+            val authManager = remember { AuthManager(context, appDatabase.appDao()) }
+            val isLoggedIn by authManager.isLoggedIn.collectAsState()
+
             Language_AppTheme(dynamicColor = false) {
-                Onboarding()
+                AppNavGraph(isLoggedIn = isLoggedIn)
             }
         }
     }
