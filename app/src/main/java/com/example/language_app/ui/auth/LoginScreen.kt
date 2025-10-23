@@ -14,22 +14,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,9 +43,13 @@ import com.example.language_app.R
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
-    val email = ""
-    val password = ""
+fun LoginScreen(
+    onLogin: () -> Unit,
+    onSignUp: () -> Unit,
+    onBack: () -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -53,7 +62,7 @@ fun LoginScreen() {
                 ),
                 navigationIcon = {
                     IconButton(
-                        onClick = { /*TODO: onBack*/ },
+                        onClick = onBack,
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         )
@@ -86,6 +95,7 @@ fun LoginScreen() {
                 )
                 Text(
                     text = "For free, join now\nand start learning",
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleLarge
                 )
             }
@@ -99,21 +109,12 @@ fun LoginScreen() {
                     text = "Email Address",
                     style = MaterialTheme.typography.bodyMedium
                 )
-//                OutlinedTextField(
-//                    value = email,
-//                    onValueChange = { /*TODO: email action*/ },
-//                    label = "Email",
-//                    modifier = Modifier.fillMaxWidth(),
-//                    enabled = {/*TODO: !isLoading*/}
-//                )
-                Card(
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Email Address",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                )
 
                 Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
 
@@ -121,21 +122,12 @@ fun LoginScreen() {
                     text = "Password",
                     style = MaterialTheme.typography.bodyMedium
                 )
-//                OutlinedTextField(
-//                    value = password,
-//                    onValueChange = { /*TODO: password action*/ },
-//                    label = "Password",
-//                    modifier = Modifier.fillMaxWidth(),
-//                    enabled = {/*TODO: !isLoading*/}
-//                )
-                Card(
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Password",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                )
 
                 ClickableText(
                     text = buildAnnotatedString {
@@ -146,7 +138,7 @@ fun LoginScreen() {
                         pop()
                     },
                     onClick = { offset ->
-                        /* TODO: Log in */
+                        /* TODO: Forgot Password */
                     },
                     style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
                 )
@@ -159,7 +151,7 @@ fun LoginScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { /*TODO: Login action*/ },
+                    onClick = onLogin,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp),
@@ -170,17 +162,20 @@ fun LoginScreen() {
                 ) {
                     Text(text = "Login")
                 }
+                val annotatedString = buildAnnotatedString {
+                    append("Not you member? ")
+                    pushStringAnnotation(tag = "SIGNUP", annotation = "signup")
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                        append("Signup")
+                    }
+                    pop()
+                }
                 ClickableText(
-                    text = buildAnnotatedString {
-                        append("Not you member? ")
-                        pushStringAnnotation(tag = "SIGNUP", annotation = "signup")
-                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append("Signup")
-                        }
-                        pop()
-                    },
+                    text = annotatedString,
                     onClick = { offset ->
-                        /* TODO: Log in */
+                        annotatedString.getStringAnnotations(tag = "SIGNUP", start = offset, end = offset).firstOrNull()?.let {
+                            onSignUp()
+                        }
                     },
                     style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
                 )
@@ -192,5 +187,5 @@ fun LoginScreen() {
 @Composable
 @Preview
 fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen({}, {}, {})
 }
