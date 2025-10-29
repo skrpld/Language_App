@@ -30,24 +30,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
+import com.example.language_app.AppNavigation
 import com.example.language_app.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navActions: AppNavigation) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Login") },
+                title = { Text("Profile") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 navigationIcon = {
                     IconButton(
-                        onClick = { /*TODO: onBack*/ },
+                        onClick = { navActions.onBack() },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         )
@@ -149,13 +151,9 @@ fun ProfileScreen() {
     }
 }
 
-@Composable
-fun TopAppBar(title: @Composable () -> Unit) {
-    TODO("Not yet implemented")
-}
 
 @Composable
 @Preview
 fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(navActions = AppNavigation(rememberNavController()))
 }

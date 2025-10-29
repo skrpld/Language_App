@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.language_app.ui.MainScreen
+import com.example.language_app.ui.profile.ProfileScreen // Corrected Import ProfileScreen
 import com.example.language_app.ui.auth.LoginScreen
 import com.example.language_app.ui.auth.SignupNamesScreen
 import com.example.language_app.ui.auth.SignupPasswordScreen
@@ -47,7 +48,10 @@ fun AppNavGraph(
             onBack = { navController.popBackStack() }
         )
         composable(AppDestinations.MAIN_ROUTE) {
-            MainScreen()
+            MainScreen(navActions = navActions)
+        }
+        composable(AppDestinations.PROFILE_ROUTE) {
+            ProfileScreen(navActions = navActions)
         }
     }
 }

@@ -18,5 +18,11 @@ object AppDestinations {
 class AppNavigation(
     private val navController: NavHostController
 ) {
+    fun navigateToProfile() {
+        navController.navigate(AppDestinations.PROFILE_ROUTE)
+    }
 
+    fun onBack() {
+        navController.popBackStack()
+    }
 }

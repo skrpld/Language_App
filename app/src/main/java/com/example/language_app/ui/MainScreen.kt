@@ -3,6 +3,7 @@ package com.example.language_app.ui
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.language_app.AppNavigation
 import com.example.language_app.R
 import com.example.language_app.ui.theme.Fredoka
 import com.example.language_app.ui.theme.Green
@@ -46,7 +48,7 @@ import com.example.language_app.ui.theme.Red
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(navActions: AppNavigation) {
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize()
@@ -69,6 +71,7 @@ fun MainScreen() {
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f)
+                                .clickable { navActions.navigateToProfile() }
                         )
                         Column {
                             Text(
@@ -191,8 +194,8 @@ fun ExerciseCard(text: String, backgroundColor: Color) {
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun MainScreenPreview() {
-    MainScreen()
-}
+//@Composable
+//@Preview(showBackground = true)
+//fun MainScreenPreview() {
+//    MainScreen(navActions = navActions)
+//}
