@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.language_app.AppNavigation
 import com.example.language_app.R
 import com.example.language_app.ui.theme.Fredoka
@@ -194,8 +195,8 @@ fun ExerciseCard(text: String, backgroundColor: Color) {
     }
 }
 
-//@Composable
-//@Preview(showBackground = true)
-//fun MainScreenPreview() {
-//    MainScreen(navActions = navActions)
-//}
+@Composable
+@Preview(showBackground = true)
+fun MainScreenPreview() {
+    MainScreen(navActions = AppNavigation(rememberNavController()))
+}
