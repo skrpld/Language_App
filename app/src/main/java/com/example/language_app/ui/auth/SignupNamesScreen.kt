@@ -20,32 +20,49 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.language_app.domain.AuthManager
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupNamesScreen(
+    authManager: AuthManager,
+    onLoginSuccess: () -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit
 ) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authManager))
+
+    val email by authViewModel.email.collectAsState()
+    val firstName by authViewModel.firstName.collectAsState()
+    val lastName by authViewModel.lastName.collectAsState()
+    val message by authViewModel.message.collectAsState()
+    val isLoading by authViewModel.isLoading.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(message) {
+        message?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            authViewModel.clearMessage()
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -101,9 +118,10 @@ fun SignupNamesScreen(
                 )
                 OutlinedTextField(
                     value = firstName,
-                    onValueChange = { firstName = it },
+                    onValueChange = { authViewModel.onFirstNameChange(it) },
                     label = { Text("First Name") },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
                 )
 
                 Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
@@ -114,9 +132,10 @@ fun SignupNamesScreen(
                 )
                 OutlinedTextField(
                     value = lastName,
-                    onValueChange = { lastName = it },
+                    onValueChange = { authViewModel.onLastNameChange(it) },
                     label = { Text("Last Name") },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
                 )
 
                 Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
@@ -127,9 +146,10 @@ fun SignupNamesScreen(
                 )
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { authViewModel.onEmailChange(it) },
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
                 )
             }
 
@@ -147,7 +167,8 @@ fun SignupNamesScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
-                    )
+                    ),
+                    enabled = !isLoading
                 ) {
                     Text(text = "Continue")
                 }
@@ -166,10 +187,4 @@ fun SignupNamesScreen(
             }
         }
     }
-}
-
-@Composable
-@Preview
-fun SignupNamesPreview() {
-    SignupNamesScreen({}, {})
 }

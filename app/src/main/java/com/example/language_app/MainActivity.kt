@@ -23,7 +23,10 @@ class MainActivity : ComponentActivity() {
             val isLoggedIn by authManager.isLoggedIn.collectAsState()
 
             Language_AppTheme(dynamicColor = false) {
-                AppNavGraph(isLoggedIn = isLoggedIn)
+                AppNavGraph(
+                    isLoggedIn = isLoggedIn,
+                    authManager = authManager
+                )
             }
         }
     }

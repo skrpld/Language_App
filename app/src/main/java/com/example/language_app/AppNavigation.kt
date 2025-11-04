@@ -3,7 +3,7 @@ package com.example.language_app
 import androidx.navigation.NavHostController
 
 object AppDestinations {
-    const val MAIN_ROUTE = "main_ROUTE"
+    const val MAIN_ROUTE = "main_screen"
     const val LOGIN_ROUTE = "login_screen"
     const val SIGNUP_ROUTE = "signup_screen"
     const val PROFILE_ROUTE = "profile_screen"
@@ -18,6 +18,9 @@ object AppDestinations {
 class AppNavigation(
     private val navController: NavHostController
 ) {
+    fun navigateToMainScreen() {
+        navController.navigate(AppDestinations.MAIN_ROUTE)
+    }
     fun navigateToProfile() {
         navController.navigate(AppDestinations.PROFILE_ROUTE)
     }
