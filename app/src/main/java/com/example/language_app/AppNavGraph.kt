@@ -14,6 +14,9 @@ import com.example.language_app.ui.profile.ProfileScreen // Corrected Import Pro
 import com.example.language_app.ui.auth.LoginScreen
 import com.example.language_app.ui.auth.SignupNamesScreen
 import com.example.language_app.ui.auth.SignupPasswordScreen
+import com.example.language_app.ui.games.GameAnimalScreen
+import com.example.language_app.ui.games.GameAuditionScreen
+import com.example.language_app.ui.games.GameWordScreen
 
 @Composable
 fun AppNavGraph(
@@ -63,15 +66,15 @@ fun AppNavGraph(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable("signup_password") {
-            SignupPasswordScreen(
-                onSignUp = {
-                    navController.navigate(AppDestinations.MAIN_ROUTE) {
-                        popUpTo("login_flow") { inclusive = true }
-                    }
-                },
-                onBack = { navController.popBackStack() }
-            )
+
+        composable(AppDestinations.WORD_GAME_ROUTE) {
+            GameWordScreen(navActions = navActions)
+        }
+        composable(AppDestinations.ANIMAL_GAME_ROUTE) {
+            GameAnimalScreen(navActions = navActions)
+        }
+        composable(AppDestinations.AUDITION_GAME_ROUTE) {
+            GameAuditionScreen(navActions = navActions)
         }
     }
 }
