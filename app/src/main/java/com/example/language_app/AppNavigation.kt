@@ -3,11 +3,9 @@ package com.example.language_app
 import androidx.navigation.NavHostController
 
 object AppDestinations {
-    const val MAIN_ROUTE = "main_screen"
-    const val LOGIN_ROUTE = "login_screen"
-    const val SIGNUP_ROUTE = "signup_screen"
-    const val PROFILE_ROUTE = "profile_screen"
-
+    const val AUTH_FLOW_ROUTE = "auth_flow"
+    const val MAIN_ROUTE = "main"
+    const val PROFILE_ROUTE = "profile"
     const val WORD_GAME_ROUTE = "word_game"
     const val ANIMAL_GAME_ROUTE = "animal_game"
     const val AUDITION_GAME_ROUTE = "audition_game"

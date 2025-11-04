@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.language_app.domain.AuthManager
 import com.example.language_app.ui.MainScreen
+import com.example.language_app.ui.auth.AuthFlow
 import com.example.language_app.ui.profile.ProfileScreen // Corrected Import ProfileScreen
 import com.example.language_app.ui.auth.LoginScreen
 import com.example.language_app.ui.auth.SignupNamesScreen
@@ -30,7 +31,7 @@ fun AppNavGraph(
     val startDestination = if (isLoggedIn) {
         AppDestinations.MAIN_ROUTE
     } else {
-        AppDestinations.LOGIN_ROUTE
+        AppDestinations.AUTH_FLOW_ROUTE
     }
 
     NavHost(
@@ -40,31 +41,25 @@ fun AppNavGraph(
         composable(AppDestinations.MAIN_ROUTE) {
             MainScreen(navActions = navActions)
         }
+        composable(AppDestinations.AUTH_FLOW_ROUTE) {
+            AuthFlow(
+                authManager = authManager,
+                onLoginSuccess = {
+                    navController.navigate(AppDestinations.MAIN_ROUTE) {
+                        popUpTo(AppDestinations.AUTH_FLOW_ROUTE) { inclusive = true }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(AppDestinations.MAIN_ROUTE) {
+            MainScreen(navActions = navActions)
+        }
         composable(AppDestinations.PROFILE_ROUTE) {
             ProfileScreen(navActions = navActions)
-        }
-        composable(AppDestinations.LOGIN_ROUTE) {
-            LoginScreen(
-                onLogin = {
-                    navController.navigate(AppDestinations.MAIN_ROUTE) {
-                        popUpTo("login_flow") { inclusive = true }
-                    }
-                },
-                onSignUp = {
-                    navController.navigate(AppDestinations.MAIN_ROUTE) {
-                        popUpTo("login_flow") { inclusive = true }
-                    }
-                },
-                onBack = { navController.popBackStack() }
-            )
-        }
-        composable(AppDestinations.SIGNUP_ROUTE) {
-            SignupNamesScreen(
-                authManager = authManager,
-                onLoginSuccess = { navActions.navigateToMainScreen() },
-                onNext = { navController.navigate("signup_password") },
-                onBack = { navController.popBackStack() }
-            )
         }
 
         composable(AppDestinations.WORD_GAME_ROUTE) {
@@ -75,6 +70,8 @@ fun AppNavGraph(
         }
         composable(AppDestinations.AUDITION_GAME_ROUTE) {
             GameAuditionScreen(navActions = navActions)
+        }
+        composable(AppDestinations.BIG_GAME_ROUTE) {
         }
     }
 }

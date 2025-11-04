@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +21,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -66,6 +68,7 @@ fun SignupNamesScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Signup") },
@@ -88,10 +91,11 @@ fun SignupNamesScreen(
                 }
             )
         }
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(16.dp)
         ) {
             Column(
@@ -160,7 +164,15 @@ fun SignupNamesScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = onNext,
+                    onClick = {
+                        // Validate required fields before proceeding
+                        if (firstName.isBlank() || lastName.isBlank() || email.isBlank()) {
+                            authViewModel.clearMessage()
+                            // You could set an error message here
+                        } else {
+                            onNext()
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp),
@@ -168,10 +180,18 @@ fun SignupNamesScreen(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
-                    enabled = !isLoading
+                    enabled = !isLoading && firstName.isNotBlank() && lastName.isNotBlank() && email.isNotBlank()
                 ) {
-                    Text(text = "Continue")
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    } else {
+                        Text(text = "Continue")
+                    }
                 }
+
                 ClickableText(
                     text = buildAnnotatedString {
                         append("Already you member? ")
@@ -181,7 +201,10 @@ fun SignupNamesScreen(
                         }
                         pop()
                     },
-                    onClick = { onBack() },
+                    onClick = {
+                        authViewModel.toggleLoginMode()
+                        onBack()
+                    },
                     style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
                 )
             }
