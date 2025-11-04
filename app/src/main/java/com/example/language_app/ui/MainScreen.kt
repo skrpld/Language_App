@@ -104,7 +104,6 @@ fun MainScreen(navActions: AppNavigation) {
                 //TODO: Make urrent users list
             }
 
-            // Available exercises section
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = "Available exercises",
@@ -118,12 +117,67 @@ fun MainScreen(navActions: AppNavigation) {
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    item { ExerciseCard(text = "Guess the animal", backgroundColor = MaterialTheme.colorScheme.secondary) }
-                    item { ExerciseCard(text = "Word practice", backgroundColor = Red) }
-                    item { ExerciseCard(text = "Audition", backgroundColor = MaterialTheme.colorScheme.tertiary) }
-                    item { ExerciseCard(text = "Game", backgroundColor = Green) }
+                    item {
+                        ExerciseCard(
+                            text = "Guess the animal",
+                            backgroundColor = MaterialTheme.colorScheme.secondary,
+                            onClick = { navActions.navigateToAnimalGame() }
+                        )
+                    }
+                    item {
+                        ExerciseCard(
+                            text = "Word practice",
+                            backgroundColor = Red,
+                            onClick = { navActions.navigateToWordGame() }
+                        )
+                    }
+                    item {
+                        ExerciseCard(
+                            text = "Audition",
+                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            onClick = { navActions.navigateToAuditionGame() }
+                        )
+                    }
+                    item {
+                        ExerciseCard(
+                            text = "Game",
+                            backgroundColor = Green,
+                            onClick = { navActions.navigateToBigGame() }
+                        )
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ExerciseCard(text: String, backgroundColor: Color, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .size(150.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.White.copy(alpha = 0.3f), CircleShape)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
@@ -159,37 +213,6 @@ fun UserListItem(name: String, points: String, avatarColor: Color) {
             Text(
                 text = points,
                 style = MaterialTheme.typography.bodySmall,
-            )
-        }
-    }
-}
-
-@Composable
-fun ExerciseCard(text: String, backgroundColor: Color) {
-    Card(
-        modifier = Modifier
-            .size(150.dp)
-            .clip(RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Placeholder for exercise emoji/icon
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .background(Color.White.copy(alpha = 0.3f), CircleShape)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
             )
         }
     }
