@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.example.language_app.AppNavigation
+import com.example.language_app.ui.navigation.AppNavigation
 import com.example.language_app.ui.theme.Green
 import com.example.language_app.ui.theme.Orange
 

@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.example.language_app.AppNavigation
+import com.example.language_app.ui.navigation.AppNavigation
 import com.example.language_app.R
 
 data class AnimalQuestion(

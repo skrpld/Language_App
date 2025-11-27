@@ -16,7 +16,7 @@ class AuthManager(private val appDao: AppDao) : IAuthManager {
     override suspend fun login(email: String, password: String): Boolean {
         _authState.value = AuthState.Loading
 
-        val user = appDao.getUserByEmailAndPassword(email, password) // TODO("перевести в Hash")
+        val user = appDao.getUserByEmailAndPassword(email, password) // TODO: перевести в Hash
 
         return if (user != null) {
             _authState.value = AuthState.LoggedIn
@@ -38,7 +38,7 @@ class AuthManager(private val appDao: AppDao) : IAuthManager {
      *     --- RGISTRATION ---
      */
     override fun startRegistration(firstName: String, lastName: String, email: String) {
-        // TODO("проверить уникальность email")
+        // TODO: проверить уникальность email
         tempRegistrationData = User(
             email = email,
             firstName = firstName,
@@ -55,7 +55,7 @@ class AuthManager(private val appDao: AppDao) : IAuthManager {
         _authState.value = AuthState.Loading
 
         val newUser = data.copy(
-            passwordHash = password // TODO("перевести в Hash")
+            passwordHash = password // TODO: перевести в Hash
         )
 
         val newUserId = appDao.insertUser(newUser)
