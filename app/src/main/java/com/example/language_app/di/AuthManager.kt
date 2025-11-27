@@ -1,98 +1,78 @@
 package com.example.language_app.di
 
-import android.content.Context
-import android.content.SharedPreferences
 import com.example.language_app.data.AppDao
 import com.example.language_app.data.models.User
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.asStateFlow
 
-class AuthManager(
-    context: Context,
-    private val appDao: AppDao,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) {
+class AuthManager(private val appDao: AppDao) : IAuthManager {
+    private var tempRegistrationData: User? = null
+    private val _authState = MutableStateFlow<AuthState>(AuthState.LoggedOut)
+    override val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    /**
+     *     --- LOGIN ---
+     */
+    override suspend fun login(email: String, password: String): Boolean {
+        _authState.value = AuthState.Loading
 
-    private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val user = appDao.getUserByEmailAndPassword(email, password) // TODO("перевести в Hash")
 
-    private val _isLoggedIn = MutableStateFlow(prefs.getBoolean(KEY_IS_LOGGED_IN, false))
-    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
-
-    private val _currentUserId = MutableStateFlow(prefs.getLong(KEY_USER_ID, -1L))
-    val currentUserId: StateFlow<Long> = _currentUserId
-
-    private fun hashPassword(password: String): String {
-        return password.hashCode().toString()  //TODO: Replace with actual hashing algorithm
+        return if (user != null) {
+            _authState.value = AuthState.LoggedIn
+            true
+        } else {
+            _authState.value = AuthState.Error("Неправильный email или пароль.")
+            _authState.value = AuthState.LoggedOut
+            false
+        }
     }
-
-    suspend fun register(firstName: String, lastName: String, email: String, password: String, profilePicturePath: String): AuthResult = withContext(dispatcher) {
-        if (firstName.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
-            return@withContext AuthResult.Error("Fields can't be empty")
-        }
-        val existingUser = appDao.getUserByEmail(email)
-        if (existingUser != null) {
-            return@withContext AuthResult.Error("Email already exists.")
-        }
-
-        val newUser = User(
+    /**
+    *     --- LOGOUT ---
+    */
+    override suspend fun logout() {
+        _authState.value = AuthState.Loading
+        _authState.value = AuthState.LoggedOut
+    }
+    /**
+     *     --- RGISTRATION ---
+     */
+    override fun startRegistration(firstName: String, lastName: String, email: String) {
+        // TODO("проверить уникальность email")
+        tempRegistrationData = User(
+            email = email,
             firstName = firstName,
             lastName = lastName,
-            email = email,
-            password = password,
-            profilePicturePath = profilePicturePath
+            passwordHash = "",
+            profilePicturePath = ""
         )
-        val userId = appDao.insertUser(newUser)
-        if (userId > 0) {
-            prefs.edit().putBoolean(KEY_IS_LOGGED_IN, true).commit()
-            prefs.edit().putString(KEY_EMAIL, email).commit()
-            prefs.edit().putLong(KEY_USER_ID, userId).commit()
-            _isLoggedIn.value = true
-            _currentUserId.value = userId
-            AuthResult.Success("Registration successful!")
+        _authState.value = AuthState.Registering
+    }
+
+    override suspend fun completeRegistration(password: String): Boolean {
+        val data = tempRegistrationData ?: return false
+
+        _authState.value = AuthState.Loading
+
+        val newUser = data.copy(
+            passwordHash = password // TODO("перевести в Hash")
+        )
+
+        val newUserId = appDao.insertUser(newUser)
+
+        if (newUserId > 0) {
+            tempRegistrationData = null
+            _authState.value = AuthState.LoggedIn
+            return true
         } else {
-            AuthResult.Error("Registration failed.")
+            _authState.value = AuthState.Error("Не удалось сохранить пользователя.")
+            _authState.value = AuthState.LoggedOut
+            return false
         }
     }
 
-    suspend fun login(email: String, password: String): AuthResult = withContext(dispatcher) {
-        if (email.isBlank() || password.isBlank()) {
-            return@withContext AuthResult.Error("email and password cannot be empty.")
-        }
-        val user = appDao.authenticateUser(email, password)
-        if (user != null) {
-            prefs.edit().putBoolean(KEY_IS_LOGGED_IN, true).commit()
-            prefs.edit().putString(KEY_EMAIL, email).commit()
-            prefs.edit().putLong(KEY_USER_ID, user.id).commit()
-            _isLoggedIn.value = true
-            _currentUserId.value = user.id
-            AuthResult.Success("Login successful!")
-        } else {
-            AuthResult.Error("Invalid email or password.")
-        }
+    override fun cancelRegistration() {
+        tempRegistrationData = null
+        _authState.value = AuthState.LoggedOut
     }
-
-    fun logout() {
-        prefs.edit().clear().commit()
-        _isLoggedIn.value = false
-        _currentUserId.value = -1L
-    }
-
-    fun getLoggedInEmail(): String? {
-        return prefs.getString(KEY_EMAIL, null)
-    }
-
-    companion object {
-        private const val PREFS_NAME = "auth_prefs"
-        private const val KEY_IS_LOGGED_IN = "is_logged_in"
-        private const val KEY_EMAIL = "email"
-        private const val KEY_USER_ID = "user_id"
-    }
-}
-
-sealed class AuthResult {
-    data class Success(val message: String) : AuthResult()
-    data class Error(val message: String) : AuthResult()
 }
