@@ -1,9 +1,9 @@
-package com.example.language_app.domain
+package com.example.language_app.di
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.language_app.data.AppDao
-import com.example.language_app.data.User
+import com.example.language_app.data.models.User
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

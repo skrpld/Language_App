@@ -1,6 +1,5 @@
-package com.example.language_app.ui.other
+package com.example.language_app.ui.screens.other
 
-import android.R.attr.onClick
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

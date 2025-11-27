@@ -1,4 +1,4 @@
-package com.example.language_app.ui.utils
+package com.example.language_app.ui.screens.utils
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.example.language_app.ui.auth
+package com.example.language_app.ui.screens.auth
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.language_app.domain.AuthManager
+import com.example.language_app.di.AuthManager
 
 @Composable
 fun AuthFlow(

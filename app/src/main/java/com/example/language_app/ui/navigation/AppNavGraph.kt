@@ -1,23 +1,20 @@
-package com.example.language_app
+package com.example.language_app.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
-import com.example.language_app.domain.AuthManager
-import com.example.language_app.ui.MainScreen
-import com.example.language_app.ui.auth.AuthFlow
-import com.example.language_app.ui.profile.ProfileScreen // Corrected Import ProfileScreen
-import com.example.language_app.ui.auth.LoginScreen
-import com.example.language_app.ui.auth.SignupNamesScreen
-import com.example.language_app.ui.auth.SignupPasswordScreen
-import com.example.language_app.ui.games.GameAnimalScreen
-import com.example.language_app.ui.games.GameAuditionScreen
-import com.example.language_app.ui.games.GameWordScreen
+import com.example.language_app.AppDestinations
+import com.example.language_app.AppNavigation
+import com.example.language_app.di.AuthManager
+import com.example.language_app.ui.screens.MainScreen
+import com.example.language_app.ui.screens.auth.AuthFlow
+import com.example.language_app.ui.screens.profile.ProfileScreen // Corrected Import ProfileScreen
+import com.example.language_app.ui.screens.games.GameAnimalScreen
+import com.example.language_app.ui.screens.games.GameAuditionScreen
+import com.example.language_app.ui.screens.games.GameWordScreen
 
 @Composable
 fun AppNavGraph(

@@ -1,10 +1,10 @@
-package com.example.language_app.ui.auth
+package com.example.language_app.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.language_app.domain.AuthManager
-import com.example.language_app.domain.AuthResult
+import com.example.language_app.di.AuthManager
+import com.example.language_app.di.AuthResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

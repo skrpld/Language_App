@@ -1,4 +1,4 @@
-package com.example.language_app.ui
+package com.example.language_app.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image

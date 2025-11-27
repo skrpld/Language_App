@@ -9,7 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.example.language_app.data.AppDatabase
-import com.example.language_app.domain.AuthManager
+import com.example.language_app.di.AuthManager
+import com.example.language_app.ui.navigation.AppNavGraph
 import com.example.language_app.ui.theme.Language_AppTheme
 
 class MainActivity : ComponentActivity() {

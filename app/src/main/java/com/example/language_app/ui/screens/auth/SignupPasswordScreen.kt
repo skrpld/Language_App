@@ -1,9 +1,9 @@
-package com.example.language_app.ui.auth
+package com.example.language_app.ui.screens.auth
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,36 +32,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.language_app.R
-import com.example.language_app.domain.AuthManager
+import com.example.language_app.di.AuthManager
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun SignupPasswordScreen(
     authManager: AuthManager,
     onLoginSuccess: () -> Unit,
-    onSignUp: () -> Unit,
     onBack: () -> Unit
 ) {
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authManager))
 
-    val email by authViewModel.email.collectAsState()
     val password by authViewModel.password.collectAsState()
+    val confirmPassword by authViewModel.confirmPassword.collectAsState()
     val message by authViewModel.message.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
-    val isLoginMode by authViewModel.isLoginMode.collectAsState()
+
+    var isAgree by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -76,7 +75,7 @@ fun LoginScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Login") },
+                title = { Text("Signup") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -110,13 +109,8 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.app_icon),
-                    contentDescription = "Learn at home"
-                )
                 Text(
-                    text = "For free, join now\nand start learning",
-                    textAlign = TextAlign.Center,
+                    text = "Choose a Password",
                     style = MaterialTheme.typography.titleLarge
                 )
             }
@@ -126,20 +120,6 @@ fun LoginScreen(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                Text(
-                    text = "Email Address",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { authViewModel.onEmailChange(it) },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading
-                )
-
-                Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
-
                 Text(
                     text = "Password",
                     style = MaterialTheme.typography.bodyMedium
@@ -152,19 +132,47 @@ fun LoginScreen(
                     enabled = !isLoading
                 )
 
-                ClickableText(
-                    text = buildAnnotatedString {
-                        pushStringAnnotation(tag = "FORGOTPASSWORD", annotation = "forgot password")
-                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append("Forgot Password")
-                        }
-                        pop()
-                    },
-                    onClick = { offset ->
-                        /* TODO: Forgot Password */
-                    },
-                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
+
+                Text(
+                    text = "Confirm Password",
+                    style = MaterialTheme.typography.bodyMedium
                 )
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { authViewModel.onConfirmPasswordChange(it) },
+                    label = { Text("Confirm Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
+                )
+
+                Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = isAgree,
+                        onCheckedChange = { isAgree = it },
+                        enabled = !isLoading
+                    )
+                    ClickableText(
+                        text = buildAnnotatedString {
+                            append("I agree ")
+                            pushStringAnnotation(tag = "TERMSOFUSE", annotation = "terms of use")
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append("Terms of Use")
+                            }
+                            pop()
+                        },
+                        onClick = { offset ->
+                            /* TODO: Open Terms of Use */
+                        },
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
+                    )
+                }
             }
 
             Column(
@@ -184,7 +192,7 @@ fun LoginScreen(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
-                    enabled = !isLoading
+                    enabled = !isLoading && isAgree && password.isNotBlank() && confirmPassword.isNotBlank()
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -192,25 +200,22 @@ fun LoginScreen(
                             color = MaterialTheme.colorScheme.onSecondary
                         )
                     } else {
-                        Text(text = "Login")
+                        Text(text = "Signup")
                     }
                 }
 
-                val annotatedString = buildAnnotatedString {
-                    append("Not you member? ")
-                    pushStringAnnotation(tag = "SIGNUP", annotation = "signup")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append("Signup")
-                    }
-                    pop()
-                }
                 ClickableText(
-                    text = annotatedString,
-                    onClick = { offset ->
-                        annotatedString.getStringAnnotations(tag = "SIGNUP", start = offset, end = offset).firstOrNull()?.let {
-                            authViewModel.toggleLoginMode()
-                            onSignUp()
+                    text = buildAnnotatedString {
+                        append("Already you member? ")
+                        pushStringAnnotation(tag = "LOGIN", annotation = "login")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append("Login")
                         }
+                        pop()
+                    },
+                    onClick = {
+                        authViewModel.toggleLoginMode()
+                        onBack()
                     },
                     style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
                 )

@@ -1,4 +1,4 @@
-package com.example.language_app.ui.other
+package com.example.language_app.ui.screens.other
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi

@@ -1,4 +1,4 @@
-package com.example.language_app.ui.games
+package com.example.language_app.ui.screens.games
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column

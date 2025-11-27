@@ -1,6 +1,7 @@
-package com.example.language_app.ui.auth
+package com.example.language_app.ui.screens.auth
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,29 +34,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.language_app.domain.AuthManager
+import com.example.language_app.R
+import com.example.language_app.di.AuthManager
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignupNamesScreen(
+fun LoginScreen(
     authManager: AuthManager,
     onLoginSuccess: () -> Unit,
-    onNext: () -> Unit,
+    onSignUp: () -> Unit,
     onBack: () -> Unit
 ) {
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authManager))
 
     val email by authViewModel.email.collectAsState()
-    val firstName by authViewModel.firstName.collectAsState()
-    val lastName by authViewModel.lastName.collectAsState()
+    val password by authViewModel.password.collectAsState()
     val message by authViewModel.message.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
+    val isLoginMode by authViewModel.isLoginMode.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -71,7 +75,7 @@ fun SignupNamesScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Signup") },
+                title = { Text("Login") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -105,8 +109,13 @@ fun SignupNamesScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.app_icon),
+                    contentDescription = "Learn at home"
+                )
                 Text(
-                    text = "Create an Account",
+                    text = "For free, join now\nand start learning",
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleLarge
                 )
             }
@@ -116,34 +125,6 @@ fun SignupNamesScreen(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                Text(
-                    text = "First Name",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { authViewModel.onFirstNameChange(it) },
-                    label = { Text("First Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading
-                )
-
-                Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
-
-                Text(
-                    text = "Last Name",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { authViewModel.onLastNameChange(it) },
-                    label = { Text("Last Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading
-                )
-
-                Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
-
                 Text(
                     text = "Email Address",
                     style = MaterialTheme.typography.bodyMedium
@@ -155,6 +136,34 @@ fun SignupNamesScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading
                 )
+
+                Spacer(modifier = Modifier.fillMaxWidth().size(8.dp))
+
+                Text(
+                    text = "Password",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { authViewModel.onPasswordChange(it) },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
+                )
+
+                ClickableText(
+                    text = buildAnnotatedString {
+                        pushStringAnnotation(tag = "FORGOTPASSWORD", annotation = "forgot password")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append("Forgot Password")
+                        }
+                        pop()
+                    },
+                    onClick = { offset ->
+                        /* TODO: Forgot Password */
+                    },
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
+                )
             }
 
             Column(
@@ -165,13 +174,7 @@ fun SignupNamesScreen(
             ) {
                 Button(
                     onClick = {
-                        // Validate required fields before proceeding
-                        if (firstName.isBlank() || lastName.isBlank() || email.isBlank()) {
-                            authViewModel.clearMessage()
-                            // You could set an error message here
-                        } else {
-                            onNext()
-                        }
+                        authViewModel.authenticate(onLoginSuccess)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -180,7 +183,7 @@ fun SignupNamesScreen(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
-                    enabled = !isLoading && firstName.isNotBlank() && lastName.isNotBlank() && email.isNotBlank()
+                    enabled = !isLoading
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -188,22 +191,25 @@ fun SignupNamesScreen(
                             color = MaterialTheme.colorScheme.onSecondary
                         )
                     } else {
-                        Text(text = "Continue")
+                        Text(text = "Login")
                     }
                 }
 
+                val annotatedString = buildAnnotatedString {
+                    append("Not you member? ")
+                    pushStringAnnotation(tag = "SIGNUP", annotation = "signup")
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                        append("Signup")
+                    }
+                    pop()
+                }
                 ClickableText(
-                    text = buildAnnotatedString {
-                        append("Already you member? ")
-                        pushStringAnnotation(tag = "LOGIN", annotation = "login")
-                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append("Login")
+                    text = annotatedString,
+                    onClick = { offset ->
+                        annotatedString.getStringAnnotations(tag = "SIGNUP", start = offset, end = offset).firstOrNull()?.let {
+                            authViewModel.toggleLoginMode()
+                            onSignUp()
                         }
-                        pop()
-                    },
-                    onClick = {
-                        authViewModel.toggleLoginMode()
-                        onBack()
                     },
                     style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
                 )
